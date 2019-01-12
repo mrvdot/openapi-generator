@@ -107,10 +107,18 @@ export class {{classname}} extends runtime.BaseAPI {
         {{/headerParams}}
         {{#authMethods}}
         {{#isBasic}}
+        {{#isBasicBasic}}
         if (this.configuration && (this.configuration.username !== undefined || this.configuration.password !== undefined)) {
             headerParameters["Authorization"] = "Basic " + btoa(this.configuration.username + ":" + this.configuration.password);
         }
-
+        {{/isBasicBasic}}
+        {{#isBasicBearer}}
+        // http bearer auth required
+        if (this.configuration && (this.configuration.accessToken || this.configuration.apiKey)) {
+            let token = this.configuration.accessToken || this.configuration.apiKey;
+            headerParameters["Authorization"] = `Bearer ${token}`;
+        }
+        {{/isBasicBearer}}
         {{/isBasic}}
         {{#isApiKey}}
         {{#isKeyInHeader}}
