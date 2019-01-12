@@ -20,7 +20,7 @@ export const COLLECTION_FORMATS = {
 };
 
 /**
- *  
+ *
  * @export
  * @interface RequestArgs
  */
@@ -30,7 +30,7 @@ export interface RequestArgs {
 }
 
 /**
- * 
+ *
  * @export
  * @class BaseAPI
  */
@@ -46,7 +46,7 @@ export class BaseAPI {
 };
 
 /**
- * 
+ *
  * @export
  * @class RequiredError
  * @extends {Error}
@@ -123,10 +123,19 @@ export const {{classname}}AxiosParamCreator = function (configuration?: Configur
             {{/isKeyInQuery}}
             {{/isApiKey}}
             {{#isBasic}}
+            {{#isBasicBasic}}
             // http basic authentication required
             if (configuration && (configuration.username || configuration.password)) {
                 localVarHeaderParameter["Authorization"] = "Basic " + btoa(configuration.username + ":" + configuration.password);
             }
+            {{/isBasicBasic}}
+            {{#isBasicBearer}}
+            // http bearer auth required
+            if (configuration && (configuration.accessToken || configuration.apiKey)) {
+                let token = configuration.accessToken || configuration.apiKey;
+                localVarHeaderParameter["Authorization"] = `Bearer ${token}`;
+            }
+            {{/isBasicBearer}}
             {{/isBasic}}
             {{#isOAuth}}
             // oauth required
@@ -224,7 +233,7 @@ export const {{classname}}AxiosParamCreator = function (configuration?: Configur
     {{#bodyParam}}
             const needsSerialization = (<any>"{{dataType}}" !== "string") || localVarRequestOptions.headers['Content-Type'] === 'application/json';
             localVarRequestOptions.data =  needsSerialization ? JSON.stringify({{paramName}} || {}) : ({{paramName}} || "");
-    {{/bodyParam}}            
+    {{/bodyParam}}
 
             return {
                 url: url.format(localVarUrlObj),
@@ -258,7 +267,7 @@ export const {{classname}}Fp = function(configuration?: Configuration) {
             const localVarAxiosArgs = {{classname}}AxiosParamCreator(configuration).{{nickname}}({{#allParams}}{{paramName}}, {{/allParams}}options);
             return (axios: AxiosInstance = globalAxios, basePath: string = BASE_PATH) => {
                 const axiosRequestArgs = {...localVarAxiosArgs.options, url: basePath + localVarAxiosArgs.url};
-                return axios.request(axiosRequestArgs);                
+                return axios.request(axiosRequestArgs);
             };
         },
     {{/operation}}
